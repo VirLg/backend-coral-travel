@@ -15,8 +15,7 @@
 // authRouter.get('/', getCurrent);
 
 // export default authRouter;
-app.get('/', async (req, res) => {    const [rows, fields] = await connection.query('SELECT * FROM abonents')
-res.json(rows);
+// app.get('/', async (req, res) => {    const [rows, fields] = await connection.query('SELECT * FROM abonents')
+// res.json(rows);
 
-}
-    
+// }
