@@ -1,6 +1,13 @@
-// import { Router } from 'express';
+import { Router } from 'express';
 // import controllerUser from '../../controllers/auth-controller.js';
+import controllerUser from '../../controllers/auth-controller.js';
 
+const authRouter = Router();
+
+const { getAllUsers } = controllerUser;
+
+authRouter.get('/', getAllUsers);
+export default authRouter;
 // const {
 //   signup,
 //   signin,
