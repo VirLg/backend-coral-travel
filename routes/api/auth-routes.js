@@ -1,28 +1,18 @@
 import { Router } from 'express';
-// import controllerUser from '../../controllers/auth-controller.js';
 import controllerUser from '../../controllers/auth-controller.js';
-
 const authRouter = Router();
 
-const { getAllUsers } = controllerUser;
+const {
+  getAllUsers,
+  add,
+  signin,
+  verificationElasticEmail,
+  resendEmailVerify,
+} = controllerUser;
 
 authRouter.get('/', getAllUsers);
+authRouter.post('/', add);
+authRouter.post('/login', signin);
+authRouter.get('/verify/:verificationToken', verificationElasticEmail);
+authRouter.post('/verify', resendEmailVerify);
 export default authRouter;
-// const {
-//   signup,
-//   signin,
-//   getCurrent,
-//   logout,
-//   updateAvatar,
-//   verificationElasticEmail,
-//   resendEmailVerify,
-// } = controllerUser;
-
-// const authRouter = Router();
-// authRouter.get('/', getCurrent);
-
-// export default authRouter;
-// app.get('/', async (req, res) => {    const [rows, fields] = await connection.query('SELECT * FROM abonents')
-// res.json(rows);
-
-// }
