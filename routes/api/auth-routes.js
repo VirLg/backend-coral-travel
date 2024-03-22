@@ -1,17 +1,23 @@
 import { Router } from 'express';
+import { ctrlWrapper, validateBody } from '../../helpers/index.js';
 import controllerUser from '../../controllers/auth-controller.js';
+import { userJoiSignup, userJoiSignin } from '../../model/users.js';
+import isBodyEmpty from '../../middlewares/isBodyEmpty.js';
 const authRouter = Router();
 
 const {
   getAllUsers,
-  add,
+  signup,
   signin,
   verificationElasticEmail,
   resendEmailVerify,
 } = controllerUser;
 
-authRouter.get('/', getAllUsers);
-authRouter.post('/', add);
+const joiValidateAuth = validateBody(userJoiSignup);
+const joiValidateSignin = validateBody(userJoiSignin);
+
+authRouter.get('/', ctrlWrapper(getAllUsers));
+authRouter.post('/register', isBodyEmpty, joiValidateAuth, ctrlWrapper(signup));
 authRouter.post('/login', signin);
 authRouter.get('/verify/:verificationToken', verificationElasticEmail);
 authRouter.post('/verify', resendEmailVerify);
