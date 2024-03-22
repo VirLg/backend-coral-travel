@@ -14,7 +14,7 @@ export const add = async (req, res, next) => {
   const { email, name, phone, password } = req.user;
 
   try {
-    const createUser = await connection.query(
+    await connection.query(
       'INSERT INTO coraltravel.users (name, phone, password, email) VALUES (?, ?, ?, ?)',
       [name, phone, password, email]
     );
@@ -89,6 +89,7 @@ const resendEmailVerify = async (req, res, next) => {
 export default {
   getAllUsers,
   add,
+
   signin,
   resendEmailVerify,
   verificationElasticEmail,
