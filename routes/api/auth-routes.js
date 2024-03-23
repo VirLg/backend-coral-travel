@@ -18,7 +18,7 @@ const joiValidateSignin = validateBody(userJoiSignin);
 
 authRouter.get('/', ctrlWrapper(getAllUsers));
 authRouter.post('/register', isBodyEmpty, joiValidateAuth, ctrlWrapper(signup));
-authRouter.post('/login', signin);
+authRouter.post('/login', isBodyEmpty, joiValidateSignin, ctrlWrapper(signin));
 authRouter.get('/verify/:verificationToken', verificationElasticEmail);
 authRouter.post('/verify', resendEmailVerify);
 export default authRouter;

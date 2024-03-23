@@ -30,10 +30,10 @@ const userSchema = new Schema(
     //   type: String,
     //   required: false,
     // },
-    // token: {
-    //   type: String,
-    //   default: null,
-    // },
+    token: {
+      type: String,
+      default: null,
+    },
     // verify: {
     //   type: Boolean,
     //   default: false,

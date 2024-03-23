@@ -1,10 +1,14 @@
 import User from '../model/users.js';
-import { httpError, ctrlWrapper } from '../helpers/index.js';
+import {
+  httpError,
+  validateHashPassword,
+  generateToken,
+} from '../helpers/index.js';
+import bcrypt from 'bcrypt';
 import { connection } from '../server.js';
 const getAllUsers = async (req, res, next) => {
   try {
     const [rows, fields] = await connection.query('SELECT * FROM users');
-
     res.json(rows);
   } catch (error) {
     console.error('Помилка при отриманні даних з бази даних:', error);
@@ -13,44 +17,56 @@ const getAllUsers = async (req, res, next) => {
 };
 
 export const signup = async (req, res, next) => {
-  const { name, email, phone, password } = req.body;
-
-  try {
+  const { name, email, password, phone, token = 'NULL' } = req.body;
+  const [rows, fields] = await connection.query('SELECT * FROM users');
+  const user = await rows.find(({ email }) => email === req.body.email);
+  if (user) {
+    throw httpError(409, `${email} in use `);
+  } else {
     const query =
-      'INSERT INTO users (name, email,password,phone) VALUES (?, ?,?,?)';
-    const values = [name, email, phone, password];
-
+      'INSERT INTO users (name, email,password,phone,token) VALUES (?, ?,?,?,?)';
+    const hashPassword = await validateHashPassword(password);
+    const values = [name, email, hashPassword, phone, token];
     const [result] = await connection.execute(query, values);
-
-    res.json(result);
-  } catch (error) {
-    console.error('Error adding user:', error);
+    res.status(201).json({
+      email: createUser.email,
+    });
   }
 };
 
 const signin = async (req, res, next) => {
   const { email, password } = req.body;
-  const User = getAllUsers();
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw httpError(401, 'Email or password is wrong');
-  } else if (!user.verify) {
-    throw httpError(401, 'Email not verifycate');
-  } else {
-    const passCompare = await bcrypt.compare(password, user.password);
-    if (!passCompare) {
+
+  try {
+    const [userDataRows, fields] = await connection.query(
+      'SELECT * FROM users WHERE email = ?',
+      [email]
+    );
+    const user = userDataRows[0];
+    console.log('userSign', user);
+    if (!user) {
+      console.log('first', 'first');
       throw httpError(401, 'Email or password is wrong');
     } else {
-      const token = generateToken(user._id);
-      await User.findByIdAndUpdate(user._id, { token });
-      res.status(200).json({
-        token,
-        user: {
-          email: user.email,
-          subscription: user.subscription,
-        },
-      });
+      const passCompare = await bcrypt.compare(password, user.password);
+
+      if (!passCompare) {
+        throw httpError(401, 'Email or password is wrong');
+      } else {
+        const token = generateToken(user.email);
+
+        await connection.query('UPDATE users SET token = ? WHERE email = ?', [
+          token,
+          email,
+        ]);
+
+        res.status(200).json({
+          token,
+        });
+      }
     }
+  } catch (error) {
+    next(error);
   }
 };
 

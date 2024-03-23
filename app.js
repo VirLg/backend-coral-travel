@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import authRouter from './routes/api/auth-routes.js';
-
+import dotenv from 'dotenv';
 const app = express();
-// dotenv.config();
+dotenv.config();
 // const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 
 // app.use(logger(formatsLogger));
